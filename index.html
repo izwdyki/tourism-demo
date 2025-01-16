@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tourism Platform Demo</title>
+    <!-- React関連 -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // アイコンコンポーネントの定義
+        const { MapPin, Sun, Cloud, Sparkles } = lucide;
+
+        // カードコンポーネント
+        const Card = ({ children, className = '' }) => (
+            <div className={`bg-white rounded-lg shadow ${className}`}>{children}</div>
+        );
+
+        // ボタンコンポーネント
+        const Button = ({ children, onClick, className = '', disabled = false }) => (
+            <button
+                onClick={onClick}
+                disabled={disabled}
+                className={`px-4 py-2 rounded-lg ${className}`}
+            >
+                {children}
+            </button>
+        );
+
+        // メインコンポーネント
+        const TourismPlatform = () => {
+            const [step, setStep] = React.useState(1);
+            const [isLoading, setIsLoading] = React.useState(false);
+            const [userPreferences, setUserPreferences] = React.useState({
+                budget: 50000,
+                startDate: '',
+                endDate: '',
+                interests: [],
+            });
+            const [recommendations, setRecommendations] = React.useState([]);
+
+            // 以下、先ほどのコンポーネントのコードをそのまま貼り付け
+            // ※importの行は削除
+
+            // returnまでのコード
+        };
+
+        // ReactDOMでマウント
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TourismPlatform />);
+    </script>
+</body>
+</html>
