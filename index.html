@@ -9,17 +9,19 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/@lucide/react"></script>
+    <!-- Feather Icons (Lucideの代替として) -->
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
-        // アイコンコンポーネントの定義
-        const { MapPin, Sun, Cloud, Sparkles } = lucide.icons;
-        
-        const IconComponent = ({ icon: Icon, ...props }) => {
-            return <Icon {...props} />;
+        // アイコンコンポーネント
+        const Icon = ({ name, className = '' }) => {
+            React.useEffect(() => {
+                feather.replace();
+            }, []);
+
+            return <i data-feather={name} className={className}></i>;
         };
 
         // カードコンポーネント
@@ -156,13 +158,13 @@
                                         <div className="flex items-start justify-between">
                                             <div>
                                                 <h3 className="text-xl font-bold text-purple-800 flex items-center">
-                                                    <IconComponent icon={MapPin} className="mr-2 text-purple-500" />
+                                                    <Icon name="map-pin" className="mr-2 text-purple-500" />
                                                     {rec.location}
                                                 </h3>
                                                 <div className="flex items-center mt-3 text-gray-600">
                                                     {rec.weather === "晴れ" ? 
-                                                        <IconComponent icon={Sun} className="mr-2" /> : 
-                                                        <IconComponent icon={Cloud} className="mr-2" />
+                                                        <Icon name="sun" className="mr-2" /> : 
+                                                        <Icon name="cloud" className="mr-2" />
                                                     }
                                                     {rec.weather} / {rec.temperature}℃
                                                 </div>
@@ -215,7 +217,7 @@
                             <div className="border-b pb-4 mb-4">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-2xl font-bold text-purple-800 flex items-center">
-                                        <IconComponent icon={Sparkles} className="mr-2" />
+                                        <Icon name="sparkles" className="mr-2" />
                                         {step === 1 ? '基本情報の入力' : 
                                          step === 2 ? '興味・関心の選択' :
                                          'おすすめプラン'}
