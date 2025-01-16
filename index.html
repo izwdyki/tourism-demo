@@ -10,13 +10,17 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/@lucide/react"></script>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
         // アイコンコンポーネントの定義
-        const { MapPin, Sun, Cloud, Sparkles } = lucide;
+        const { MapPin, Sun, Cloud, Sparkles } = lucide.icons;
+        
+        const IconComponent = ({ icon: Icon, ...props }) => {
+            return <Icon {...props} />;
+        };
 
         // カードコンポーネント
         const Card = ({ children, className = '' }) => (
@@ -34,7 +38,6 @@
             </button>
         );
 
-        // メインコンポーネント
         const TourismPlatform = () => {
             const [step, setStep] = React.useState(1);
             const [isLoading, setIsLoading] = React.useState(false);
@@ -46,10 +49,196 @@
             });
             const [recommendations, setRecommendations] = React.useState([]);
 
-            // 以下、先ほどのコンポーネントのコードをそのまま貼り付け
-            // ※importの行は削除
+            const interests = [
+                { id: 'onsen', label: '温泉', icon: '♨️' },
+                { id: 'history', label: '歴史', icon: '🏛️' },
+                { id: 'nature', label: '自然', icon: '🗻' },
+                { id: 'cuisine', label: '料理', icon: '🍱' },
+            ];
 
-            // returnまでのコード
+            const handleNextStep = () => {
+                if (step === 2) {
+                    setIsLoading(true);
+                    setTimeout(() => {
+                        setRecommendations([
+                            {
+                                location: "富良野",
+                                weather: "晴れ",
+                                temperature: 24,
+                                specialEvent: "ラベンダーフェスティバル",
+                                matchScore: 92
+                            },
+                            {
+                                location: "別府",
+                                weather: "曇り",
+                                temperature: 22,
+                                specialEvent: "温泉まつり",
+                                matchScore: 85
+                            }
+                        ]);
+                        setIsLoading(false);
+                        setStep(3);
+                    }, 1000);
+                } else {
+                    setStep(step + 1);
+                }
+            };
+
+            const renderStepContent = () => {
+                switch(step) {
+                    case 1:
+                        return (
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block mb-2 text-purple-700">予算（円）</label>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="200000"
+                                        value={userPreferences.budget}
+                                        onChange={(e) => setUserPreferences(prev => ({ ...prev, budget: e.target.value }))}
+                                        className="w-full"
+                                    />
+                                    <div className="text-right text-purple-600">
+                                        {Number(userPreferences.budget).toLocaleString()}円
+                                    </div>
+                                </div>
+
+                                <Button 
+                                    onClick={handleNextStep}
+                                    className="w-full bg-purple-600 text-white"
+                                >
+                                    次へ
+                                </Button>
+                            </div>
+                        );
+
+                    case 2:
+                        return (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    {interests.map((interest) => (
+                                        <Button
+                                            key={interest.id}
+                                            onClick={() => {
+                                                setUserPreferences(prev => ({
+                                                    ...prev,
+                                                    interests: prev.interests.includes(interest.id)
+                                                        ? prev.interests.filter(id => id !== interest.id)
+                                                        : [...prev.interests, interest.id]
+                                                }));
+                                            }}
+                                            className={
+                                                userPreferences.interests.includes(interest.id)
+                                                    ? 'bg-purple-600 text-white'
+                                                    : 'bg-white border border-purple-200'
+                                            }
+                                        >
+                                            <span className="mr-2">{interest.icon}</span>
+                                            {interest.label}
+                                        </Button>
+                                    ))}
+                                </div>
+                                <Button 
+                                    onClick={handleNextStep}
+                                    className="w-full bg-purple-600 text-white"
+                                >
+                                    プランを探す
+                                </Button>
+                            </div>
+                        );
+
+                    case 3:
+                        return (
+                            <div className="space-y-4">
+                                {recommendations.map((rec, index) => (
+                                    <Card key={index} className="p-6">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-purple-800 flex items-center">
+                                                    <IconComponent icon={MapPin} className="mr-2 text-purple-500" />
+                                                    {rec.location}
+                                                </h3>
+                                                <div className="flex items-center mt-3 text-gray-600">
+                                                    {rec.weather === "晴れ" ? 
+                                                        <IconComponent icon={Sun} className="mr-2" /> : 
+                                                        <IconComponent icon={Cloud} className="mr-2" />
+                                                    }
+                                                    {rec.weather} / {rec.temperature}℃
+                                                </div>
+                                                <div className="mt-3">
+                                                    <span className="bg-purple-100 text-purple-800 rounded-full px-4 py-1 text-sm">
+                                                        {rec.specialEvent}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-lg font-bold text-purple-600">
+                                                    マッチ度: {rec.matchScore}%
+                                                </div>
+                                                <Button className="mt-2 bg-purple-600 text-white">
+                                                    詳細へ進む
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        );
+                }
+            };
+
+            if (isLoading) {
+                return (
+                    <div className="min-h-screen bg-purple-50 p-8 flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="animate-spin h-16 w-16 border-4 border-purple-600 rounded-full border-t-transparent"></div>
+                            <p className="mt-4 text-purple-800">検索中...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-purple-50 p-8">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="text-center mb-8">
+                            <h1 className="text-4xl font-bold text-purple-600">
+                                さあ、行こう。
+                            </h1>
+                            <p className="text-gray-600 mt-2">
+                                まだ知られぬあなたの理想郷へ。
+                            </p>
+                        </div>
+
+                        <Card className="p-6">
+                            <div className="border-b pb-4 mb-4">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold text-purple-800 flex items-center">
+                                        <IconComponent icon={Sparkles} className="mr-2" />
+                                        {step === 1 ? '基本情報の入力' : 
+                                         step === 2 ? '興味・関心の選択' :
+                                         'おすすめプラン'}
+                                    </h2>
+                                    <div className="flex gap-2">
+                                        {[1, 2, 3].map((s) => (
+                                            <div
+                                                key={s}
+                                                className={`w-3 h-3 rounded-full ${
+                                                    s === step
+                                                        ? 'bg-purple-600'
+                                                        : 'bg-gray-200'
+                                                }`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            {renderStepContent()}
+                        </Card>
+                    </div>
+                </div>
+            );
         };
 
         // ReactDOMでマウント
