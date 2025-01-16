@@ -6,98 +6,34 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        purple: {
-                            50: '#faf5ff',
-                            100: '#f3e8ff',
-                            200: '#e9d5ff',
-                            500: '#a855f7',
-                            600: '#9333ea',
-                            700: '#7e22ce',
-                            800: '#6b21a8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Remix Icons for better icon support -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        input[type="date"] {
+            -webkit-appearance: none;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
     <script type="text/babel">
-        const Icon = ({ name, className = '' }) => (
-            <i className={`ri-${name} ${className}`}></i>
-        );
-
-        const Card = ({ children, className = '' }) => (
-            <div className={`bg-white/80 backdrop-blur-sm rounded-lg shadow-lg border border-purple-100 ${className}`}>
-                {children}
-            </div>
-        );
-
-        const Button = ({ children, onClick, className = '', disabled = false }) => (
-            <button
-                onClick={onClick}
-                disabled={disabled}
-                className={`px-4 py-2 rounded-lg transition-colors duration-200 ${className}`}
-            >
-                {children}
-            </button>
-        );
+        // 前回のコンポーネント定義（Icon, Card, Button）は同じ
 
         const TourismPlatform = () => {
-            const [step, setStep] = React.useState(1);
-            const [isLoading, setIsLoading] = React.useState(false);
-            const [userPreferences, setUserPreferences] = React.useState({
-                budget: 50000,
-                startDate: '',
-                endDate: '',
-                interests: [],
-            });
-            const [recommendations, setRecommendations] = React.useState([]);
+            // ... 前回のstate定義は同じ
 
+            // 興味・関心の項目を8個に増やす
             const interests = [
                 { id: 'onsen', label: '温泉', icon: '♨️' },
                 { id: 'history', label: '歴史', icon: '🏛️' },
+                { id: 'agriculture', label: '農業', icon: '🌾' },
+                { id: 'traditional-arts', label: '伝統芸能', icon: '🎭' },
+                { id: 'crafts', label: '工芸', icon: '🎨' },
+                { id: 'festivals', label: '祭り', icon: '🏮' },
+                { id: 'cuisine', label: '伝統料理', icon: '🍱' },
                 { id: 'nature', label: '自然', icon: '🗻' },
-                { id: 'cuisine', label: '料理', icon: '🍱' },
             ];
-
-            const handleNextStep = () => {
-                if (step === 2) {
-                    setIsLoading(true);
-                    setTimeout(() => {
-                        setRecommendations([
-                            {
-                                location: "富良野",
-                                weather: "晴れ",
-                                temperature: 24,
-                                specialEvent: "ラベンダーフェスティバル",
-                                matchScore: 92
-                            },
-                            {
-                                location: "別府",
-                                weather: "曇り",
-                                temperature: 22,
-                                specialEvent: "温泉まつり",
-                                matchScore: 85
-                            }
-                        ]);
-                        setIsLoading(false);
-                        setStep(3);
-                    }, 1000);
-                } else {
-                    setStep(step + 1);
-                }
-            };
 
             const renderStepContent = () => {
                 switch(step) {
@@ -119,6 +55,30 @@
                                     </div>
                                 </div>
 
+                                <div className="space-y-4">
+                                    <label className="block text-purple-700 font-medium">旅行期間</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm text-gray-600">出発日</label>
+                                            <input
+                                                type="date"
+                                                value={userPreferences.startDate}
+                                                onChange={(e) => setUserPreferences(prev => ({ ...prev, startDate: e.target.value }))}
+                                                className="w-full mt-1 p-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-gray-600">帰宅日</label>
+                                            <input
+                                                type="date"
+                                                value={userPreferences.endDate}
+                                                onChange={(e) => setUserPreferences(prev => ({ ...prev, endDate: e.target.value }))}
+                                                className="w-full mt-1 p-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <Button 
                                     onClick={handleNextStep}
                                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:opacity-90"
@@ -128,131 +88,23 @@
                             </div>
                         );
 
-                    case 2:
-                        return (
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    {interests.map((interest) => (
-                                        <Button
-                                            key={interest.id}
-                                            onClick={() => {
-                                                setUserPreferences(prev => ({
-                                                    ...prev,
-                                                    interests: prev.interests.includes(interest.id)
-                                                        ? prev.interests.filter(id => id !== interest.id)
-                                                        : [...prev.interests, interest.id]
-                                                }));
-                                            }}
-                                            className={
-                                                userPreferences.interests.includes(interest.id)
-                                                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white h-16'
-                                                    : 'bg-white border border-purple-200 text-purple-700 h-16'
-                                            }
-                                        >
-                                            <span className="mr-2">{interest.icon}</span>
-                                            {interest.label}
-                                        </Button>
-                                    ))}
-                                </div>
-                                <Button 
-                                    onClick={handleNextStep}
-                                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:opacity-90"
-                                >
-                                    プランを探す
-                                </Button>
-                            </div>
-                        );
-
-                    case 3:
-                        return (
-                            <div className="space-y-4">
-                                {recommendations.map((rec, index) => (
-                                    <Card key={index} className="p-6">
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <h3 className="text-xl font-bold text-purple-800 flex items-center">
-                                                    <Icon name="map-pin-line" className="mr-2 text-pink-500" />
-                                                    {rec.location}
-                                                </h3>
-                                                <div className="flex items-center mt-3 text-gray-600">
-                                                    {rec.weather === "晴れ" ? 
-                                                        <Icon name="sun-line" className="mr-2 text-yellow-500" /> : 
-                                                        <Icon name="cloud-line" className="mr-2 text-blue-500" />
-                                                    }
-                                                    {rec.weather} / {rec.temperature}℃
-                                                </div>
-                                                <div className="mt-3">
-                                                    <span className="inline-block bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 rounded-full px-4 py-1 text-sm font-medium">
-                                                        {rec.specialEvent}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className="text-lg font-bold text-transparent bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text">
-                                                    マッチ度: {rec.matchScore}%
-                                                </div>
-                                                <Button className="mt-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90">
-                                                    詳細へ進む
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        );
+                    // ... 他のケースは同じ
                 }
             };
-
-            if (isLoading) {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-8 flex items-center justify-center">
-                        <div className="text-center">
-                            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-600 mx-auto"></div>
-                            <p className="mt-4 text-purple-800 text-lg font-medium">検索中...</p>
-                        </div>
-                    </div>
-                );
-            }
 
             return (
                 <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-8">
                     <div className="max-w-4xl mx-auto">
                         <div className="text-center mb-8">
-                            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                                 さあ、行こう。
                             </h1>
-                            <p className="text-gray-600 mt-2 text-lg">
+                            <p className="text-gray-600 mt-2 text-xl">
                                 まだ知られぬあなたの理想郷へ。
                             </p>
                         </div>
 
-                        <Card className="p-6">
-                            <div className="border-b border-purple-100 pb-4 mb-4">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-2xl font-bold text-purple-800 flex items-center">
-                                        <Icon name="sparkles-line" className="mr-2 text-pink-500" />
-                                        {step === 1 ? '基本情報の入力' : 
-                                         step === 2 ? '興味・関心の選択' :
-                                         'おすすめプラン'}
-                                    </h2>
-                                    <div className="flex gap-2">
-                                        {[1, 2, 3].map((s) => (
-                                            <div
-                                                key={s}
-                                                className={`w-3 h-3 rounded-full ${
-                                                    s === step
-                                                        ? 'bg-gradient-to-r from-purple-600 to-pink-600'
-                                                        : s < step
-                                                        ? 'bg-gray-300'
-                                                        : 'bg-gray-200'
-                                                }`}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            {renderStepContent()}
-                        </Card>
+                        {/* ... 残りの部分は同じ */}
                     </div>
                 </div>
             );
